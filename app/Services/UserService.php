@@ -15,4 +15,9 @@ class UserService
     {
         return $this->userRepository->getAllUsers();
     }
+
+    public function getUsersRol($role)
+    {
+        return $this->userRepository->getUserByRol($role);
+    }
 }

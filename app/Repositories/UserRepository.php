@@ -14,4 +14,9 @@ class UserRepository
     {
         return User::find($id);
     }
+
+    public function getUserByRol($role)
+    {
+        return User::where('role',$role)->get();
+    }
 }
