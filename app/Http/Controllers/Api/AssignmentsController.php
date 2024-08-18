@@ -20,8 +20,8 @@ class AssignmentsController extends Controller
     public function createAssignments(Request $assignments):JsonResponse
     {
         try{
-            $this->assignmentsServise->createAssignment($assignments->all());
-            return response()->json([$assignments->all()],200);
+            $newAssignment = $this->assignmentsServise->createAssignment($assignments->all());
+            return response()->json($newAssignment,200);
 
         }catch(ValidationException $e){
             return response()->json([

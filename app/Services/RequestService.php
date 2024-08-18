@@ -29,4 +29,14 @@ class RequestService
 
         return $this->requestRepository->createRequest($request);
     }
+
+    public function getAllRequest()
+    {
+        return $this->requestRepository->getAllRequest();
+    }
+
+    public function updateRequestStatus($requestId, $newStatus)
+    {
+        return $this->requestRepository->updateRequestStatus($requestId, $newStatus);
+    }
 }
