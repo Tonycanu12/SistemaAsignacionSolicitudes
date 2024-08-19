@@ -52,6 +52,7 @@ class AssigmentsService
             case 'random':
                 try {
                     $newAssignment = $this->algorithmRamdom($assignments);
+                    return $newAssignment;
                 } catch (\RuntimeException $e) {
                     return response()->json(['Error' => $e->getMessage()], 500);
                 }
@@ -72,11 +73,28 @@ class AssigmentsService
                     return response()->json(['Error' => $e->getMessage()], 500);
                 }
                 break;
+            case 'direct':
+                try {
+                    $newAssignment = $this->algorithDirect($assignments);
+                    return $newAssignment;
+                } catch (\RuntimeException $e) {
+                    return response()->json(['Error' => $e->getMessage()], 500);
+                }
+                break;
         }
-        //este es del random
-        $this->assignmetsRespository->createAssignment($newAssignment);
-        return $newAssignment;
+
     }
+
+    public function getAllAsignments(){
+        try{
+            return $this->assignmetsRespository->getAllAssignment();
+        }catch(\Exception $e){
+            throw new \Exception("Error al obtener los asignamientos");
+        }
+        
+    }
+
+
 
     //asigna a un usuario a alzar una solicutud
     private function algorithmRamdom($assignments)
@@ -102,11 +120,19 @@ class AssigmentsService
         $randomId = rand($minId, $maxId);
 
 
-        return [
+
+        $data = [
             'user_id' => $randomId,
             'request_id' => $assignments['request_id'],
             'metodo_assignments' => $assignments['algorithm']
         ];
+
+
+        $this->assignmetsRespository->createAssignment($data);
+
+
+        return  $this->dataRequest($data);
+
         //print_r("es el nuevo dato '$newUser'");
 
     }
@@ -143,7 +169,8 @@ class AssigmentsService
                 $this->assignmetsRespository->createAssignment($data);
                 //actualizar estados de request asignados
                 $this->requestService->updateRequestStatus($request['id'], 'asignado');
-                $assigmentsHistory[] = $data;
+                //$assigmentsHistory[] = $data;
+                $assigmentsHistory[] = $this->dataRequest($data);
             } catch (\Exception $e) {
                 throw new \Exception("Error en la asignacion de usuarios a request '{$e}'");
             }
@@ -159,6 +186,7 @@ class AssigmentsService
 
     private function algorithEquidad($rol)
     {
+         $assigmentsHistory =[];
         //verificamos usuarios con el rol
         $users = $this->userService->getUsersRol($rol);
         if ($users->isEmpty()) {
@@ -213,16 +241,80 @@ class AssigmentsService
                 $this->assignmetsRespository->createAssignment($data);
                 //actualizar estados de request asignados
                 $this->requestService->updateRequestStatus($request['id'], 'asignado');
-                //$assigmentsHistory[] = $data;
+
+                $assigmentsHistory[] = $this->dataRequest($data);
 
             } catch (\Exception $e) {
                 throw new \Exception("Error en la asignacion de usuarios a request '{$e}'");
             }
 
             $assignmentsCount[$userId]++;
-            //print_r($data);
-
         }
-        return "asignados con equity '$countrequestPending'";
+
+        return $assigmentsHistory;
+    }
+
+    private function algorithDirect($assignments){
+        //verificar datos correspondietes id request para asignar
+        if (!isset($assignments['role']) || !isset($assignments['request_id']) || !isset($assignments['user_id'])) {
+            throw new \InvalidArgumentException('Verifique que esta enviando los datos rol, user_id, request_id para la asignacion Directa');
+        }
+
+        //validamos el usuario con el rol y solicitud con estado pendiente
+        $userRol = $this->userService->getUserById($assignments['user_id']);
+        $stateRequest = $this->requestService->getRequestById($assignments['request_id']);
+
+        if($userRol['role'] !=$assignments['role'] ){
+            throw new \InvalidArgumentException('El usuario a asignar no concide con el rol especificado');
+        }
+
+        if(!$userRol){
+            throw new \InvalidArgumentException('Usuario no encontrado verifique que el usuario exista');
+        }
+
+        if($stateRequest->estado_request != 'pendiente'){
+            throw new \InvalidArgumentException("El estado de la solicitud es: '$stateRequest->estado_request' verifique que el estado sea: pendiente");
+        }
+
+        if (!$stateRequest) {
+            throw new \InvalidArgumentException('Solicitud no encontrada');
+        }
+
+
+        //asignamos
+        $data = [
+            'user_id' => $assignments['user_id'],
+            'request_id' => $assignments['request_id'],
+            'metodo_assignments' => 'direct'
+        ];
+
+        try{
+            $this->assignmetsRespository->createAssignment($data);
+            //actualizar estados de request asignados
+            $this->requestService->updateRequestStatus($assignments['request_id'], 'asignado');
+        }catch(\Exception $e){
+            throw new \InvalidArgumentException('Error al asignar la solicitud al usuario');
+        }
+
+
+        return $this->dataRequest($data);
+
+    }
+
+    private function dataRequest($data){
+        try{
+            $user = $this->userService->getUserById($data['user_id']);
+            $requestTitle = $this->requestService->getRequestById($data['request_id']);
+        }catch(\Exception $e){
+            throw new \RuntimeException('Error en la obtencion de datos');
+        }
+        $dataRequest = [
+            'user' => $user->name,
+            'request_title' => $requestTitle->titulo_request,
+            'metodo_assignments' => $data['metodo_assignments']
+        ];
+
+        return $dataRequest;
+
     }
 }

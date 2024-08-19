@@ -20,4 +20,8 @@ class UserService
     {
         return $this->userRepository->getUserByRol($role);
     }
+
+    public function getUserById($id)  {
+        return $this->userRepository->getUserById($id);
+    }
 }

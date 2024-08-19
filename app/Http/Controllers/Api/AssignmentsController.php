@@ -45,4 +45,15 @@ class AssignmentsController extends Controller
             ],500);
         }
     }
+
+    public function getAllAsignments():JsonResponse{
+        try{
+            return response()->json($this->assignmentsServise->getAllAsignments(),200);
+        }catch(\Exception $e){
+            return response()->json([
+                'error' => 'A ocurrido un error',
+                'error_message' => $e->getMessage()
+            ],500);
+    }
+}
 }

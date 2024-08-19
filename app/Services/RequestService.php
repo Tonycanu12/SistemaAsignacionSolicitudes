@@ -35,6 +35,10 @@ class RequestService
         return $this->requestRepository->getAllRequest();
     }
 
+    public function getRequestById($id){
+        return $this->requestRepository->getRequestById($id);
+    }
+
     public function updateRequestStatus($requestId, $newStatus)
     {
         return $this->requestRepository->updateRequestStatus($requestId, $newStatus);

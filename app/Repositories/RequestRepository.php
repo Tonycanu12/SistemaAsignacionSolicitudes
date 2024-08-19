@@ -16,6 +16,11 @@ class RequestRepository
 
     }
 
+    public function getRequestById($id){
+        return $request = Request::find($id);
+
+    }
+
     public function updateRequestStatus($requestId, $newStatus){
 
         $request = Request::find($requestId);
