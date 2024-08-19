@@ -11,8 +11,6 @@ Este documento proporciona instrucciones sobre cómo configurar y ejecutar el ap
 
 - [MySQL](https://dev.mysql.com/downloads/) (incluido en XAMPP)
 
-- [Node.js](https://nodejs.org/) (opcional, para manejar paquetes front-end)
-
 - [Git](https://git-scm.com/downloads)
 
 - [XAMPP](https://www.apachefriends.org/index.html)
