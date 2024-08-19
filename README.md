@@ -46,7 +46,7 @@ DB_DATABASE=nombre_base_de_datos
 DB_USERNAME=root
 DB_PASSWORD=
 ```
-> **Note: En XAMPP, el usuario por defecto para MySQL es `root` y la contraseña suele estar vacía.
+> **Note:  Crea primero la base de datos (con cualquier nombre) y luego modifica el .env, en XAMPP el usuario por defecto para MySQL es `root` y la contraseña suele estar vacía.
 
 ## 4. Ejecutar Migraciones y Seeders
 
