@@ -77,11 +77,6 @@ Descarga el json  y importalo en Postman:
 [Api_Laravel.postman_collection.json](Api_Laravel.postman_collection.json)
 
 
-## 6.Prueba en Postman 
-Descarga el json  y importalo en Postman:
-
-[Api_Laravel.postman_collection.json](Api_Laravel.postman_collection.json)
-
 ## Informe sobre los algoritmos de asignacion.
 
 [ver Informe](informe.md)
