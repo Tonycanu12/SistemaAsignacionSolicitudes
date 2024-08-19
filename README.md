@@ -35,7 +35,7 @@ composer install
 ```
 ## 3. Configurar el Archivo `.env`
 
-Copia el archivo `.env.example` a `.env` para crear tu archivo de configuración de entorno.
+Crea el archivo `.env ` luego copia el contenido de   `.env.example ` para crear tu archivo de configuración de entorno.
 
 Edita el archivo `.env` para configurar tus credenciales de base de datos y otras variables de entorno. Asegúrate de establecer los valores correctos para tu entorno de XAMPP:
 ```bash
@@ -47,6 +47,12 @@ DB_USERNAME=root
 DB_PASSWORD=
 ```
 > **Note:  Crea primero la base de datos (con cualquier nombre) y luego modifica el .env, en XAMPP el usuario por defecto para MySQL es `root` y la contraseña suele estar vacía.
+## 3.1  Generar la Clave de la Aplicación
+Genera la clave de la aplicación de Laravel ejecutando el siguiente comando:
+```bash
+php artisan key:generate
+```
+al ejecutar el comando el key se asignara en tu archivo .env
 
 ## 4. Ejecutar Migraciones y Seeders
 
