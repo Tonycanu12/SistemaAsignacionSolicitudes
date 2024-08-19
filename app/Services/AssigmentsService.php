@@ -59,7 +59,7 @@ class AssigmentsService
                 break;
             case 'sequential':
                 try {
-                    $newAssignment = $this->algorithSecuencial($assignments['role']);
+                    $newAssignment = $this->algorithSequential($assignments['role']);
                     return $newAssignment;
                 } catch (\RuntimeException $e) {
                     return response()->json(['Error' => $e->getMessage()], 500);
@@ -67,7 +67,7 @@ class AssigmentsService
                 break;
             case 'equity':
                 try {
-                    $newAssignment = $this->algorithEquidad($assignments['role']);
+                    $newAssignment = $this->algorithEquity($assignments['role']);
                     return $newAssignment;
                 } catch (\RuntimeException $e) {
                     return response()->json(['Error' => $e->getMessage()], 500);
@@ -81,6 +81,9 @@ class AssigmentsService
                     return response()->json(['Error' => $e->getMessage()], 500);
                 }
                 break;
+            default:
+                throw new \Exception("Error el metodo de asignacion incorrecto");
+            break;
         }
 
     }
@@ -91,7 +94,7 @@ class AssigmentsService
         }catch(\Exception $e){
             throw new \Exception("Error al obtener los asignamientos");
         }
-        
+
     }
 
 
@@ -105,11 +108,23 @@ class AssigmentsService
             throw new \InvalidArgumentException('El dato request id es requerido para el metodo de asignacion Random');
         }
 
+
         //verificamos usuarios con el rol
         $rol = $assignments['role'];
         $users = $this->userService->getUsersRol($rol);
         if ($users->isEmpty()) {
             throw new \Exception("Error al obtener usuarios con el rol:'$rol', verifique que el rol exista");
+        }
+
+        //verificamos si existe el request
+        $request = $this->requestService->getRequestById($assignments['request_id']);
+
+        if(!$request){
+            throw new \Exception("Error al obtener la solicitud verifique que exista");
+        }
+
+        if($request->estado_request != 'pendiente'){
+            throw new \InvalidArgumentException("El estado de la solicitud es: '$request->estado_request' verifique que el estado sea: pendiente");
         }
 
         //id usuario random dentro del rango de usuarios obtenidos
@@ -128,7 +143,14 @@ class AssigmentsService
         ];
 
 
-        $this->assignmetsRespository->createAssignment($data);
+        //asignamos user a solicitudes
+        try {
+            $this->assignmetsRespository->createAssignment($data);
+            //actualizar estados de request asignados
+            $this->requestService->updateRequestStatus($request['id'], 'asignado');
+        } catch (\Exception $e) {
+            throw new \Exception("Error en la asignacion de usuarios a request '{$e}'");
+        }
 
 
         return  $this->dataRequest($data);
@@ -138,7 +160,7 @@ class AssigmentsService
     }
 
 
-    private function algorithSecuencial($rol)
+    private function algorithSequential($rol)
     {
         //verificamos usuarios con el rol
         $users = $this->userService->getUsersRol($rol);
@@ -184,7 +206,7 @@ class AssigmentsService
     }
 
 
-    private function algorithEquidad($rol)
+    private function algorithEquity($rol)
     {
          $assigmentsHistory =[];
         //verificamos usuarios con el rol
@@ -263,6 +285,10 @@ class AssigmentsService
         //validamos el usuario con el rol y solicitud con estado pendiente
         $userRol = $this->userService->getUserById($assignments['user_id']);
         $stateRequest = $this->requestService->getRequestById($assignments['request_id']);
+
+        if(!$userRol){
+            throw new \InvalidArgumentException('El usuario no existe');
+        }
 
         if($userRol['role'] !=$assignments['role'] ){
             throw new \InvalidArgumentException('El usuario a asignar no concide con el rol especificado');
