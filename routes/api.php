@@ -18,3 +18,5 @@ Route::post('/request', [RequestController::class, 'createRequest']);
 
 //asignacion request
 Route::post('/request/assign', [AssignmentsController::class, 'createAssignments']);
+
+
