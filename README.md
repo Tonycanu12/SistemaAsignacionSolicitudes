@@ -24,7 +24,6 @@ git clone https://github.com/usuario/nombre-del-repositorio.git
 
 ### 2. Instalar Dependencias
 Navega al directorio del proyecto y utiliza Composer para instalar las dependencias del proyecto:
-```bash
 cd nombre-del-repositorio
 composer install
 
