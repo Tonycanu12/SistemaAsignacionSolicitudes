@@ -74,6 +74,6 @@ php artisan serve
 ## 6.Prueba en Postman 
 Descarga el json  y importalo en Postman:
 
-[Api _Laravel.postman_collection.json](Api _Laravel.postman_collection.json)
+[Api_Laravel.postman_collection.json](Api_Laravel.postman_collection.json)
 
 
